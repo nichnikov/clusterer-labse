@@ -26,6 +26,7 @@ def remote_clustering(args, clustering_url, upload_type="excel"):
         df = pd.read_csv(args['file'], header=None)
         json_data = {"texts": list(set(df[0])), "score": args['score']}
     clustering_texts_response = requests.post(clustering_url, json=json_data)
+    print(clustering_texts_response)
     clustering_texts = clustering_texts_response.json()
     return pd.DataFrame(clustering_texts["texts_with_labels"], columns=["label", "cluster_name", "texts", "cluster_size"])
 

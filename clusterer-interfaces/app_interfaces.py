@@ -41,9 +41,9 @@ input_data = name_space.model("Insert JSON",
                                "scores_list": fields.List(fields.Float(description="Distance", required=True))}, )
 
 
-CLUSTERING_URL = os.environ.get("CLUSTERING_URL")
-if CLUSTERING_URL is None: raise Exception('Env var CLUSTERING_URL not defined')
-
+# CLUSTERING_URL = os.environ.get("CLUSTERING_URL")
+# if CLUSTERING_URL is None: raise Exception('Env var CLUSTERING_URL not defined')
+CLUSTERING_URL = "http://0.0.0.0:8080/api/clusterer"
 
 @name_space.route('/json_excel')
 class ClusteringJsonExcel(Resource):
@@ -61,7 +61,7 @@ def api_configurator(name_space):
     upload_parser = name_space.parser()
     upload_parser.add_argument("file", type=FileStorage, location='files', required=True,
                                help="тексты должны быть в первом столбце")
-    upload_parser.add_argument("scores_list", type=float, action='append', required=True,
+    upload_parser.add_argument("score", type=float, required=True,
                                help="кластеризация для каждого значения скора")
     return upload_parser
 
@@ -100,5 +100,5 @@ class ClusteringEcxelExcel(Resource):
 
 
 if __name__ == "__main__":
-    serve(app, host="0.0.0.0", port=8080)
+    serve(app, host="0.0.0.0", port=4500)
     # app.run(host='0.0.0.0', port=4500)
