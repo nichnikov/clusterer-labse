@@ -7,7 +7,8 @@ from flask import Flask, jsonify, request
 from flask_restplus import Api, Resource, fields
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.metrics.pairwise import cosine_similarity
-from sentence_transformers import SentenceTransformer
+import torch
+from transformers import AutoTokenizer, AutoModel
 from waitress import serve
 
 app = Flask(__name__)
@@ -51,9 +52,13 @@ def grouped_func(data: list) -> [{}]:
     return grouped_data
 
 
-def clustering_func(vectorizer: SentenceTransformer, clusterer: AgglomerativeClustering, texts: []) -> {}:
+def clustering_func(tokenizer, model, clusterer: AgglomerativeClustering, texts: []) -> {}:
     """Function for text collection clustering"""
-    vectors = vectorizer.encode([x.lower() for x in texts])
+    encoded_input = tokenizer(texts, padding=True, truncation=True, max_length=64, return_tensors='pt')
+    with torch.no_grad():
+        model_output = model(**encoded_input)
+    embeddings = model_output.pooler_output
+    vectors = torch.nn.functional.normalize(embeddings)
     clusters = clusterer.fit(vectors)
     data = [(lb, v, tx) for lb, v, tx in zip(clusters.labels_, vectors, texts)]
     grouped_data = grouped_func(data)
@@ -81,9 +86,10 @@ class Clustering(Resource):
         clusterer = AgglomerativeClustering(n_clusters=None, distance_threshold=json_data['score'],
                                             memory=os.path.join("cache"))
 
-        vectorizer = SentenceTransformer('distiluse-base-multilingual-cased-v1')
+        tokenizer = AutoTokenizer.from_pretrained("cointegrated/LaBSE-en-ru")
+        model = AutoModel.from_pretrained("cointegrated/LaBSE-en-ru")
 
-        return jsonify(clustering_func(vectorizer, clusterer, clustering_texts))
+        return jsonify(clustering_func(tokenizer, model, clusterer, clustering_texts))
 
 
 if __name__ == "__main__":

@@ -7,3 +7,4 @@ sentence_transformers
 sklearn
 scikit-learn
 Werkzeug==0.16.1
+torch
