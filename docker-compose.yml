@@ -1,10 +1,10 @@
 version: "3.9"
 services:
   cl:
-    image: clusterer
+    image: clusterer-labse
     ports:
-    - "8080:8080"
+    - "6007:6007"
   cl_inf:
-    image: clusterer-interfaces
+    image: clusterer-interfaces-labse
     ports:
-    - "4500:4500"
+    - "6008:6008"

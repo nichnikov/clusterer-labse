@@ -43,7 +43,7 @@ input_data = name_space.model("Insert JSON",
 
 # CLUSTERING_URL = os.environ.get("CLUSTERING_URL")
 # if CLUSTERING_URL is None: raise Exception('Env var CLUSTERING_URL not defined')
-CLUSTERING_URL = "http://0.0.0.0:8080/api/clusterer"
+CLUSTERING_URL = "http://10.15.151.26:6007/api/clusterer"
 
 @name_space.route('/json_excel')
 class ClusteringJsonExcel(Resource):
@@ -100,5 +100,5 @@ class ClusteringEcxelExcel(Resource):
 
 
 if __name__ == "__main__":
-    serve(app, host="0.0.0.0", port=4500)
+    serve(app, host="0.0.0.0", port=6008)
     # app.run(host='0.0.0.0', port=4500)
